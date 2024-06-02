@@ -1,9 +1,9 @@
 import express, { Express } from 'express'
-
 import knex from 'knex'
 import { Model } from 'objection'
 import 'dotenv/config'
 import { env } from 'process'
+import routes from '../config/routes'
 
 const app:Express = express()
 const knexInstance = knex({
@@ -15,3 +15,10 @@ const knexInstance = knex({
     port: Number(env.POSTGRES_PORT)
   },
 })
+
+Model.knex(knexInstance)
+
+app.use(express.json())
+app.use(routes)
+
+export default app

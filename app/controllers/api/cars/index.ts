@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { CarsModel } from '../../../models/cars'
-import cloudinary from '../../middleware/cloudinary'
+import cloudinary from '../../../middleware/cloudinary'
 import { UploadApiErrorResponse, UploadApiResponse } from 'cloudinary'
 
 async function getCars(req: Request, res: Response) {
@@ -117,11 +117,9 @@ async function deleteCarById(req: Request, res: Response) {
     return res.status(404).send('Data tidak ditemukan')
   }
 
-
-
 }
 
-export {
+export default {
   getCars,
   getCarById,
   addCar,
