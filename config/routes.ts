@@ -10,6 +10,7 @@ apiRouter.post('/api/v1/cars', upload.single('image'), controllers.api.cars.addC
 apiRouter.put('/api/v1/cars/:id', upload.single('image'), controllers.api.cars.updateCarById)
 apiRouter.delete('/api/v1/cars/:id', controllers.api.cars.deleteCarById)
 apiRouter.post('/api/v1/register', controllers.api.users.register)
+apiRouter.post('/api/v1/login', controllers.api.users.login)
 
 apiRouter.use(controllers.api.main.onLost) //Error 404
 apiRouter.use(controllers.api.main.onError) //Error 500
