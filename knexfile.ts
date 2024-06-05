@@ -4,7 +4,6 @@ import 'dotenv/config'
 import { env } from "process";
 
 // Update with your config settings.
-console.log(env.POSTGRES_CLIENT)
 
 const config: { [key: string]: Knex.Config } = {
   development: {
