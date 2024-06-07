@@ -21,3 +21,14 @@ export async function authorize(req: any, res: Response, next: NextFunction) {
     })
   }
 }
+
+export function checkPermission (role: string[]) {
+  return (req: any, res: any, next: any) => {
+    if (!role.includes(req.user.role)) {
+      return res.status(401).json({
+        message: 'Access denied'
+      })
+    }
+    next()
+  }
+}
