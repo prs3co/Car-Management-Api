@@ -13,4 +13,4 @@ export class CarsModel extends Model {
   }
 }
 
-export type cars = ModelObject<CarsModel>
+export type Cars = ModelObject<CarsModel>
