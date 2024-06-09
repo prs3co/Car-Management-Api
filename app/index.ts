@@ -3,7 +3,7 @@ import knex from 'knex'
 import { Model } from 'objection'
 import 'dotenv/config'
 import { env } from 'process'
-import routes from '../config/routes'
+import apiRouter from '../config/routes'
 
 const app:Express = express()
 const knexInstance = knex({
@@ -19,6 +19,6 @@ const knexInstance = knex({
 Model.knex(knexInstance)
 
 app.use(express.json())
-app.use(routes)
+app.use('/api/v1/', apiRouter)
 
 export default app
