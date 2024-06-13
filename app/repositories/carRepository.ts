@@ -1,6 +1,5 @@
 import { MaybeCompositeId } from 'objection'
 import { CarsModel, Cars } from '../models/cars'
-import cloudinary from '../middleware/cloudinary'
 
 class CarRepository {
   async create( createArgs: Cars) {
@@ -54,15 +53,7 @@ class CarRepository {
       total
     }
   }
-
-  async upload() {
-    try {
-      const url = await cloudinary.uploader.upload(file)
-    } catch (error) {
-      
-    }
-  }
 }
 
 export type carsType = Cars
-export default CarRepository
+export default new CarRepository

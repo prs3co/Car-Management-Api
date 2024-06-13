@@ -2,18 +2,12 @@ import { Request, Response } from 'express'
 import { CarsModel } from '../../../models/cars'
 import cloudinary from '../../../middleware/cloudinary'
 import { UploadApiErrorResponse, UploadApiResponse } from 'cloudinary'
+import carService from '../../../services/carService'
 
 async function getCars(req: Request, res: Response) {
   const { q } = req.query
 
-  if ( !q ) {
-    const cars = await CarsModel.query()
-    return res.status(200).json(cars)
-  }
-  const cars = await CarsModel
-    .query()
-    .whereLike('name', `%${q}%`)
-
+  const cars = await carService.get(q)
   return res.status(200).json(cars)
 }
 
@@ -21,7 +15,7 @@ async function getCarById(req: Request, res: Response) {
   const { id } = req.params
 
   try {
-    const cars = await CarsModel.query().findById(id).throwIfNotFound()
+    const cars = await carService.getbyId(id)
 
     return res.status(200).json(cars)
   } catch (error) {
@@ -35,24 +29,19 @@ async function addCar(req: Request, res: Response) {
     return res.status(400).send('Invalid Request')
   }
 
-  const fileBase64 = req.file?.buffer.toString('base64')
-  const file = `data:${req.file?.mimetype};base64,${fileBase64}`
-
-  cloudinary.uploader.upload(file, async function(err: UploadApiErrorResponse, result: UploadApiResponse) {
-    if(err) {
-      console.log(err)
-      return res.status(400).send('Gagal upload files')
-    }
-
-    const cars = await CarsModel.query().insert(
+  try {
+    const fileUpload = await carService.upload(req.file)
+    const cars = await carService.create(
       {
         ...req.body,
-        image: result.url
+        image: fileUpload.url
       }
-    ).returning('*')
-    return res.status(200).json(cars)
-  })
+    )
 
+    return res.status(200).json(cars)
+  } catch (error) {
+    return res.status(400).send('Gagal upload file')
+  }
 }
 
 async function updateCarById(req: Request, res: Response) {
@@ -60,56 +49,37 @@ async function updateCarById(req: Request, res: Response) {
 
   if (!req.file) {
     try {
-      const cars = await CarsModel
-        .query()
-        .where({ id })
-        .patch(req.body)
-        .throwIfNotFound()
-        .returning("*")
-
+      const cars = await carService.update(id, req.body)
       return res.status(200).send('Data berhasil di update')
     } catch (error) {
       return res.status(404).send('Data tidak ditemukan')
     }
   }
 
-  const fileBase64 = req.file.buffer.toString("base64")
-  const file = `data:${req.file.mimetype};base64,${fileBase64}`
+  try {
+    let fileUpload
+    try {
+      fileUpload = await carService.upload(req.file)
+    } catch (error) {
+      return res.status(400).send('Gagal upload file')
+    }
 
-
-  cloudinary.uploader.upload(file, async function(err: UploadApiErrorResponse, 
-    result:UploadApiResponse) {
-      if (err) {
-        console.log(err)
-        return res.status(400).send('Gagal upload file')
-      }
-
-      try {
-        const cars = await CarsModel
-          .query()
-          .where({ id })
-          .patch({
-            ...req.body,
-            image: result.url
-          })
-          .throwIfNotFound()
-          .returning('*')
-
-        return res.status(404).send('Data berhasil di update')
-      } catch (error) {
-        return res.status(404).send('Data tidak ditemukan')
-      }
+    const cars = carService.update(id, {
+      ...req.body,
+      image: fileUpload.url
     })
+
+    return res.status(404).send('Data berhasil di update')
+  } catch (error) {
+    return res.status(404).send('Data tidak ditemukan')
+  }
 }
 
 async function deleteCarById(req: Request, res: Response) {
   const { id } = req.params
 
   try {
-    const cars = await CarsModel
-      .query()
-      .deleteById(id)
-      .throwIfNotFound()
+    const cars = await carService.delete(id)
 
     return res.status(200).send("Data berhasil di hapus")
   } catch (error) {
