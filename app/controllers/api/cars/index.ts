@@ -106,13 +106,12 @@ async function deleteCarById(req: Request, res: Response) {
   const { id } = req.params
 
   try {
-    CarsModel
+    const cars = await CarsModel
       .query()
       .deleteById(id)
       .throwIfNotFound()
-      .then(() => res.status(200).send("Data berhasil di hapus"))
-      .catch
 
+    return res.status(200).send("Data berhasil di hapus")
   } catch (error) {
     return res.status(404).send('Data tidak ditemukan')
   }
