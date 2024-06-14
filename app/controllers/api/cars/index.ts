@@ -1,7 +1,4 @@
 import { Request, Response } from 'express'
-import { CarsModel } from '../../../models/cars'
-import cloudinary from '../../../middleware/cloudinary'
-import { UploadApiErrorResponse, UploadApiResponse } from 'cloudinary'
 import carService from '../../../services/carService'
 
 async function getCars(req: Request, res: Response) {

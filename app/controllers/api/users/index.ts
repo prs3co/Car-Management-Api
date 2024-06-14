@@ -1,14 +1,12 @@
-import { NextFunction, Request, Response } from 'express';
-import { UsersModel } from '../../../models/users';
+import { Request, Response } from 'express';
 import { encryptPassword, checkPassword } from '../../../utils/encrypt';
 import { createToken } from '../../../utils/jwt';
+import userService from '../../../services/userService';
 
-async function login(req: Request, res: Response) {
+async function login(req: any, res: Response) {
   const { email, password } = req.body
 
-  const user = await UsersModel
-    .query()
-    .findOne({ email })
+  const user = await userService.login(email)
 
   if (!user) {
     return res.status(404).json({
@@ -46,18 +44,20 @@ async function login(req: Request, res: Response) {
 }
 
 async function register(req: Request, res: Response) {
-  const { name, email, password, role, avatar } = req.body
+  const { name, email, password, avatar } = req.body
 
   try {
     const encryptedPassword = await encryptPassword(password)
 
-    const user = await UsersModel.query().insert(
+    const user = await userService.register(
       {
         name,
         email,
         password: encryptedPassword,
         role: 'user',
-        avatar
+        avatar,
+        created_by: 'system',
+        updated_by: 'system'
       }
     )
 
@@ -73,7 +73,7 @@ async function register(req: Request, res: Response) {
     })
   } catch (error) {
     console.error(error)
-    res.status(500).json({  
+    res.status(500).json({
       message: 'Internal server error'
     })
   }

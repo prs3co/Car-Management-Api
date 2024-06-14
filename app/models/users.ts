@@ -17,4 +17,5 @@ export class UsersModel extends Model {
   }
 }
 
-export type users = ModelObject<UsersModel>
+export type UsersModelType = ModelObject<UsersModel>
+export type Users = Omit<UsersModelType, 'id' | 'created_at' | 'updated_at'>;

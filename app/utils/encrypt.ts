@@ -8,6 +8,7 @@ export async function encryptPassword(password: string) {
     const result = await bcrypt.hash(password, salt)
     return result
   } catch (error) {
+    console.warn(error)
     throw error
   }
 }
@@ -18,6 +19,7 @@ export async function checkPassword(encryptedPassword: string, password: string)
     const result = await bcrypt.compare(password, encryptedPassword)
     return result
   } catch (error) {
+    console.warn(error)
     throw error
   }
 }
